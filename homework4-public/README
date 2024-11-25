@@ -1,0 +1,36 @@
+README - Explicații Funcții handle_ pentru Biblioteca Virtuală
+
+AM LUAT buffer.c buffer.h helpers.c helpers.h request.c request.h din laboratorul oficial.
+AM luat de pe githubul oficial biblioteca de la parson.
+
+Imi ruleaza tot checkerul pe local fara probleme.
+
+
+
+Acest README descrie funcționalitățile fiecărei funcții handle_ din aplicația de gestionare a unei biblioteci virtuale. Fiecare funcție interacționează cu un server web printr-o interfață API pentru a realiza diferite operațiuni precum înregistrarea, logarea, accesarea bibliotecii, adăugarea sau ștergerea cărților.
+
+handle_register(char *host, int port)
+Funcția handle_register gestionează procesul de înregistrare a unui nou utilizator. Utilizatorul este solicitat să introducă un nume de utilizator și o parolă. Aceste date sunt împachetate într-un payload JSON folosind sprintf și apoi sunt trimise la server printr-o cerere HTTP POST. Funcția verifică răspunsul serverului pentru a determina dacă înregistrarea a fost reușită sau nu, afișând mesaje corespunzătoare.
+
+handle_login(char *host, int port, char **session_cookie)
+handle_login se ocupă de autentificarea utilizatorilor. Utilizatorul este întrebat să furnizeze numele de utilizator și parola, care sunt trimise serverului similar cu funcția handle_register. În caz de succes, funcția extrage cookie-ul de sesiune din răspunsul serverului și îl stochează pentru a menține starea sesiunii. Acest cookie este esențial pentru a realiza operațiuni ulterioare care necesită autentificare.
+
+handle_enter_library(char *host, int port, char *session_cookie)
+Această funcție permite accesul la biblioteca virtuală după autentificare. Cererea HTTP GET include cookie-ul de sesiune pentru autentificare. În răspunsul de la server, se caută un token JWT, care este necesar pentru a accesa și alte funcții ale bibliotecii. Token-ul este extras folosind string manipulation.
+
+handle_get_books(char *host, int port, char *auth_token)
+handle_get_books solicită lista de cărți disponibile în bibliotecă. Funcția folosește un token de autorizare (JWT) pentru a face o cerere GET. Răspunsul serverului este verificat pentru a extrage datele JSON, care sunt apoi afișate utilizatorului.
+
+handle_get_book(char *host, int port, char *auth_token)
+Similar cu handle_get_books, această funcție face o cerere GET pentru a obține informații despre o carte specifică, identificată prin ID. Datele returnate sunt parseate folosind biblioteca Parson și afișate utilizatorului. Parson este folosită aici pentru a descompune string-ul JSON într-o structură de date ușor de accesat, extrăgând detaliile cărții precum titlu, autor, etc.
+
+handle_add_book(char *host, int port, char *auth_token)
+Această funcție permite adăugarea unei noi cărți în bibliotecă. Informațiile despre carte sunt colectate de la utilizator, formate într-un payload JSON și trimise printr-o cerere POST. În cazul unui răspuns pozitiv de la server, cartea este considerată adăugată cu succes.
+
+handle_delete_book(char *host, int port, char *auth_token)
+Funcția handle_delete_book gestionează ștergerea unei cărți din bibliotecă. ID-ul cărții este solicitat de la utilizator și este folosit pentru a construi o cerere DELETE. Răspunsul serverului indică succesul sau eșecul operațiunii.
+
+handle_logout(char* host, int port, char **session_cookie, char **auth_token)
+La final, handle_logout încheie sesiunea utilizatorului. Funcția trimite o cerere de tip GET pentru a notifica serverul despre terminarea sesiunii. Cookie-ul de sesiune și token-ul JWT sunt șterse pentru a preveni utilizarea lor ulterioară.
+
+Fiecare funcție din această aplicație este esențială pentru gestionarea interacțiunilor dintre client și server în cadrul unei biblioteci virtuale, asigurând un flux de lucru clar și securizat pentru utilizatori.
